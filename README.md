@@ -1,66 +1,66 @@
-# Hielke Map
+# Hielke Parkour Maps
 
-This repository includes the "Hielke" map — a custom map intended for speedrunning practice and testing.
+This repository contains Hielke parkour maps — the community parkour levels made and curated as seen on https://hielkemaps.com.
 
-This README explains what the Hielke map is, what files you can expect, how to run or load it, and how to contribute improvements.
+These maps are short, focused movement challenges designed for practicing parkour-style movement, routing, and speedrunning techniques.
 
-## Overview
+## About HielkeMaps
 
-Hielke is a purpose-built map included in this project to practice movement, routing, and timing for speedruns. It focuses on short, repeatable routes that let players practice key mechanics and optimize splits.
+HielkeMaps (https://hielkemaps.com) is a collection and hub for parkour maps and leaderboards. The maps here follow the same design goals: clear starts and ends, repeatable routes, and checkpoint-based timing for comparing runs.
 
-## What you'll find
+## What’s included
 
-Typical files and folders related to the Hielke map:
+- One or more Hielke parkour map files (common formats: `.bsp`, `.map`, or engine-specific packages).
+- Optional assets for the maps (textures, models, sounds) in an `assets/` or `maps/<mapname>/` folder if present.
+- Demo or run files where available (e.g., recorded demos, leaderboards, or timing scripts).
 
-- `maps/hielke/` (or similar): map file(s) and assets (geometry, textures, lighting). Adjust the path if the project stores maps elsewhere.
-- `hielke.map` / `hielke.bsp` / `hielke.json`: the main map file (format depends on the engine/toolchain used).
-- `README.md`: this document describing the map.
-- `assets/`: optional textures, models, or sounds used by the map.
+If you don’t see the map files you expect, search the repository for `hielke`, `parkour`, or the map names listed on hielkemaps.com.
 
-If the exact filenames differ in this repo, use the repository search to locate the map files.
+## How to install and run the maps
 
-## Features
+General steps (engine-agnostic):
+1. Locate the map file(s) in this repository (common folders: `maps/`, `content/`, or the repo root).
+2. Copy the map file(s) and any required asset folders into your game's `maps` or `levels` folder.
+3. Start the game and load the map (many engines let you type `map <mapname>` or select it from the level menu).
+4. Use any in-game or external timing/recording tools to capture your run and compare with leaderboards on hielkemaps.com.
 
-- Short practice routes designed for speedrun training.
-- Clear start and end markers for split timing.
-- Checkpoints or demo scripts (if included) to help reproduce runs.
+Engine-specific note (Source engine / GoldSrc):
+- Place `.bsp` files into the game's `maps/` directory (`<steamapps>/common/<game>/maps/`).
+- Launch the game, open the console, and run: `map <mapname>`
 
-## How to load / run the map
+If you tell me which game/engine you use, I can add precise commands and common server settings (e.g., enabling sv_cheats for testing is not recommended for leaderboard-legal runs).
 
-Exact steps depend on the game engine or toolchain used. General instructions:
+## How to play
 
-1. Locate the engine or game that supports the map format used in this repo (e.g., [engine name] that reads `.bsp` or `.map`).
-2. Copy the map file(s) into the game's `maps` folder, or use the game's map loader / console command to load the map directly.
-3. Start the game and run the map. Use your preferred timing tool or in-engine demo recording to capture runs.
+- Start at the map's spawn point and follow or discover the intended route.
+- Use checkpoints if the map provides them to practice segments.
+- Record demos or use a timing utility to capture your time for leaderboard submission.
 
-If this repository includes scripts or tools to build or convert the map (for example, a map compiler or exporter), run those tools first — check for a `build`, `tools`, or `scripts` folder and their README or comments.
-
-## Inspecting or editing the map
-
-- Use the map editor compatible with the map's source format (e.g., a level editor for `.map` source files).
-- If the map is in a text-friendly format (JSON, XML), you can open it in a text editor to inspect routes, spawn points, or metadata.
-
-## Contributing
+## Contributing maps or updates
 
 Contributions are welcome. Suggested workflow:
+1. Fork the repo and create a branch for your map or changes.
+2. Add the map file(s) under `maps/<mapname>/` and include metadata: author, version, engine, and a short description.
+3. Include a thumbnail image (`thumbnail.png`) and a `README.md` inside the map folder describing routes and recommended settings.
+4. Open a pull request with details and any demo/demo scripts for verification.
 
-1. Create a new branch for your changes.
-2. Edit or improve map geometry, routes, or metadata.
-3. If you change assets, include updated or optimized files in the appropriate folder and update any build scripts if needed.
-4. Run any included build or validation tools to ensure the map still loads.
-5. Open a pull request describing your changes and why they improve the map.
+Please include the original author attribution and a link to any source (for example, the map’s page on hielkemaps.com).
 
-Please include screenshots, demo recordings, or notes explaining route changes whenever possible.
+## Attribution and links
 
-## Troubleshooting
+Maps and the HielkeMaps website are community-created. If you are the original author of a map included here, add a note in the map's folder with your preferred credit and license terms.
 
-- If the map fails to load: double-check the map format, required assets, and engine compatibility.
-- If textures or models are missing: ensure asset paths are correct or recompile the map with the correct asset references.
-
-## Contact / Attribution
-
-If you are the original author or have specific credit information for the Hielke map, add it here.
+- HielkeMaps: https://hielkemaps.com
 
 ## License
 
-If this map has a specific license, add that license text or reference here. If not, follow the repository's default license.
+If the maps or assets in this repository have a specific license, include that in each map folder or in this README. If unspecified, assume the repository-wide license applies — add a LICENSE file to make reuse terms explicit.
+
+---
+
+If you want, I can:
+- Update this README with direct links to specific maps on hielkemaps.com.
+- Add thumbnails and example demo commands for a particular engine (Source, Quake, Unity, etc.).
+- Create a `maps/` folder structure and add metadata files for each map found in the repo.
+
+Tell me which maps (or which game/engine) to target and I’ll update the README and repository accordingly.
