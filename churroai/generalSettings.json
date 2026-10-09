@@ -1,0 +1,23 @@
+{
+    "text": "## General Settings\n\n**🔑 API Keys**\nGemini keys can be added directly. Other provider keys must use provider:API_KEY (mistral:, qwen:, or openrouter:).\n```${(userSetting.apikeys ?? []).join('\\n') || 'None Configured. Using Global AI'}\n```",
+    "colour": "onyx",
+    "settings": {
+        "add_apikey": {
+            "label": "Add an API Key",
+            "emoji": "pdf",
+            "inputs": [
+                {
+                    "type": "text",
+                    "id": "apikey",
+                    "label": "API Key",
+                    "placeholder": "AIzaSy... or mistral:..."
+                }
+            ]
+        },
+        "remove_apikeys": {
+            "label": "Remove API Keys",
+            "emoji": "x",
+            "inputs": []
+        }
+    }
+}
