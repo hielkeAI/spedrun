@@ -1,0 +1,8 @@
+create table public.sparx_reader (
+  id text not null,
+  correct_answer text null,
+  incorrect_answers jsonb null default '[]'::jsonb,
+  text text null,
+  options text[] null,
+  constraint sparx_reader_pkey primary key (id)
+) TABLESPACE pg_default;

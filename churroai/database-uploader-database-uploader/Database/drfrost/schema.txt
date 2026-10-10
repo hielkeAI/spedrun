@@ -1,0 +1,6 @@
+create table public.drfrost (
+  question text not null,
+  answer text not null,
+  params jsonb not null default '[]'::jsonb,
+  constraint drfrost_pkey primary key (question, params)
+) TABLESPACE pg_default;

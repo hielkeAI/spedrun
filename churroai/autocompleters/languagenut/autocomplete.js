@@ -1,6 +1,4 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
 const progressTracker = require('../../utils/progressTracker');
-const { emojis, colours } = require('../../config.json');
 const getProgressBar = require('../../utils/getProgressBar');
 const formatTime = require('../../utils/formatTime');
 
@@ -9,22 +7,6 @@ async function autocomplete(userSession) {
     const settings = userSession.settings;
     const to_language = homework.languageCode;
 
-    // const tasksInHomework = homework.tasks.length;
-    // const totalEstimatedTime = parseInt(homework.estimated_time) || 0;
-    const cancel = new ButtonBuilder()
-        .setCustomId('cancel')
-        .setLabel('Cancel')
-        .setEmoji(emojis.x)
-        .setStyle(ButtonStyle.Danger);
-
-    const row = new ActionRowBuilder()
-        .addComponents(cancel);
-
-    const initialEmbed = new EmbedBuilder()
-        .setColor(colours.languagenut)
-        .setTitle('LanguageNut Autocompleter')
-        .setDescription(`\`Starting Questions...\``);
-
     const taskTimer = process.hrtime();
     let fakeTimeTotal = 0;
 
@@ -32,13 +14,24 @@ async function autocomplete(userSession) {
         return `> **Time Spent**: ${formatTime((process.hrtime(taskTimer))[0])}\n> **Time Simulated**: ${formatTime(fakeTimeTotal)}`;
     };
 
-    const progressUpdater = new progressTracker(userSession.interaction, getTimeField);
+    const getSettingsField = () => `**Time Settings:** ${settings.min}-${settings.max} seconds\n**Accuracy:** ${settings.accuracy}%`;
+    const progressUpdater = new progressTracker(
+        userSession.interaction,
+        getTimeField,
+        getSettingsField,
+        null,
+        'LanguageNut',
+        'languagenut',
+        userSession.selectedHomeworkDue,
+        userSession
+    );
     let currentGroup = [];
     const sectionsProgress = [];
     for (const task of homework.tasks) {
         const progressEntry = {
             name: task.name,
-            value: getProgressBar(Number(task.gameResults?.percentage || 0) / 100, 1)
+            value: getProgressBar(Number(task.gameResults?.percentage || 0) / 100, 1),
+            percentage: Number(task.gameResults?.percentage || 0)
         };
 
         // Push into current group
@@ -54,7 +47,7 @@ async function autocomplete(userSession) {
         sectionsProgress.push(currentGroup);
     }
 
-    if (await progressUpdater.start(initialEmbed, row, sectionsProgress)) return;
+    if (await progressUpdater.start(sectionsProgress)) return;
 
     const minTime = settings.min;
     const maxTime = settings.max;

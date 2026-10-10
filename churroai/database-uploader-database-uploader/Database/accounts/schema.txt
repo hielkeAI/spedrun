@@ -1,0 +1,21 @@
+create table public.accounts (
+  discord_id text not null,
+  license text null,
+  free_trial_start timestamp with time zone null,
+  sparx_reader_settings jsonb not null default '{"max": 20, "min": 10, "srp": 300, "wpm": 300}'::jsonb,
+  sparx_maths_settings jsonb not null default '{"max": 140, "min": 100, "model": "2.5-flash -> 2.5-pro", "pdfSettings": {"question": true, "working_out": false}}'::jsonb,
+  sparx_science_settings jsonb not null default '{"max": 40, "min": 20, "model": "2.5-flash -> 2.5-pro"}'::jsonb,
+  languagenut_settings jsonb not null default '{"max": 30, "min": 10, "accuracy": 100}'::jsonb,
+  educake_settings jsonb not null default '{"max": 10, "min": 5}'::jsonb,
+  seneca_settings jsonb not null default '{"max": 25, "min": 23}'::jsonb,
+  master_password text null,
+  slots bigint null,
+  main_accounts jsonb not null default '{}'::jsonb,
+  uses jsonb not null default '{}'::jsonb,
+  saved_accounts text null,
+  total_usage jsonb not null default '{}'::jsonb,
+  drfrost_settings jsonb not null default '{"max": 140, "min": 100}'::jsonb,
+  custom_slots boolean not null default false,
+  apikeys text[] not null default '{}'::text[],
+  constraint accounts_pkey primary key (discord_id)
+) TABLESPACE pg_default;

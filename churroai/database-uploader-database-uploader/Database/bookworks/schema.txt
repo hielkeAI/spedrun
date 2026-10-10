@@ -1,0 +1,6 @@
+create table public.bookworks (
+  package_id text not null,
+  bookworks text not null,
+  timestamp timestamp with time zone not null,
+  constraint bookworks_pkey primary key (package_id)
+) TABLESPACE pg_default;

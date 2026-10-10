@@ -14,6 +14,7 @@ class progressTracker {
         this.sectionsProgress;
         this.currentPage = 1;
         this.cancelled = false;
+        this.collector = null;
         this.Executer = Executer;
         this.title = title;
         this.colour = colour;
@@ -25,6 +26,8 @@ class progressTracker {
     }
 
     async end() {
+        if (!this.targetMessage || !this.container) return;
+        this.collector?.stop();
         await this.targetMessage.edit({
             components: [disableComponents(this.container)]
         });
@@ -76,7 +79,7 @@ class progressTracker {
             spacing: SeparatorSpacingSize.Small
         });
 
-        if (this.Executer) this.Executer.settings = this.userSession.settings;
+        if (this.Executer && this.userSession) this.Executer.settings = this.userSession.settings;
 
         const cancel = new ButtonBuilder()
             .setCustomId('cancel')
@@ -90,8 +93,9 @@ class progressTracker {
             .setEmoji(emojis.settings)
             .setStyle(ButtonStyle.Primary);
 
-        const row = new ActionRowBuilder()
-            .addComponents(cancel, settingsBtn);
+        const buttons = [cancel];
+        if (this.userSession) buttons.push(settingsBtn);
+        const row = new ActionRowBuilder().addComponents(buttons);
 
         const container = new ContainerBuilder()
             .setAccentColor(colours[this.colour])
@@ -144,11 +148,11 @@ class progressTracker {
                 flags: MessageFlags.IsComponentsV2
             });
 
-            const collector = this.targetMessage.createMessageComponentCollector({
+            this.collector = this.targetMessage.createMessageComponentCollector({
                 componentType: ComponentType.Button
             });
 
-            collector.on('collect', async (interaction) => {
+            this.collector.on('collect', async (interaction) => {
                 if (interaction.customId === 'cancel') {
                     await interaction.deferUpdate();
                     this.cancelled = true;

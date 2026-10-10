@@ -1,0 +1,18 @@
+create table public.sparx_maths (
+  content text not null,
+  answer jsonb null,
+  working_out text null,
+  element text null,
+  type text[] null,
+  choices jsonb not null default '{}'::jsonb,
+  slots jsonb not null default '{}'::jsonb,
+  number_fields jsonb not null default '{}'::jsonb,
+  text_fields jsonb not null default '{}'::jsonb,
+  card_groups jsonb not null default '{}'::jsonb,
+  slot_groups jsonb not null default '{}'::jsonb,
+  choice_groups jsonb not null default '{}'::jsonb,
+  cards jsonb not null default '{}'::jsonb,
+  incorrect_answers jsonb not null default '[]'::jsonb,
+  ai_model text null,
+  constraint sparx_maths_pkey primary key (content)
+) TABLESPACE pg_default;

@@ -148,6 +148,7 @@ class drfrostAutocompleter {
         this.startSettings = {};
         this.faketime = faketime; // {min: 100, max: 140}
         this.lastMainMenuSelect = null;
+        this.homeworkPage = 0;
     }
 
     createMainMenu() {
@@ -165,7 +166,7 @@ class drfrostAutocompleter {
         return await this.requesticator.sendRequest('https://www.drfrost.org/api/user/current');
     }
 
-    async mainMenu(tasks, disabled = false, defaultID) {
+    async mainMenu(tasks, disabled = false, defaultID, page) {
         let select = new StringSelectMenuBuilder()
             .setCustomId('drfrost_homework')
             .setPlaceholder(`Choose a Homework`)
@@ -173,7 +174,19 @@ class drfrostAutocompleter {
             .setDisabled(disabled);
 
         if (tasks) {
-            for (const task of tasks) {
+            if (Number.isInteger(page)) {
+                this.homeworkPage = page;
+            } else if (defaultID !== undefined) {
+                const selectedIndex = tasks.findIndex(task => String(task.aid) === String(defaultID));
+                if (selectedIndex >= 0) {
+                    this.homeworkPage = Math.floor(selectedIndex / 25);
+                }
+            }
+
+            const pageCount = Math.max(1, Math.ceil(tasks.length / 25));
+            this.homeworkPage = Math.max(0, Math.min(this.homeworkPage, pageCount - 1));
+
+            for (const task of tasks.slice(this.homeworkPage * 25, (this.homeworkPage + 1) * 25)) {
                 const value = String(task.aid);
                 const option = new StringSelectMenuOptionBuilder()
                     .setLabel(task.label)
@@ -228,8 +241,26 @@ class drfrostAutocompleter {
         saveAccountBtnCopy.setDisabled(disabled);
 
         const selectRow = new ActionRowBuilder().addComponents(select);
+        const menuRows = [selectRow];
 
-        const row = new ActionRowBuilder();
+        if (tasks?.length > 25) {
+            const pageCount = Math.ceil(tasks.length / 25);
+            const paginationRow = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setCustomId('drfrost_homework_prev')
+                    .setLabel('Previous')
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(disabled || this.homeworkPage === 0),
+                new ButtonBuilder()
+                    .setCustomId('drfrost_homework_next')
+                    .setLabel('Next')
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(disabled || this.homeworkPage === pageCount - 1)
+            );
+            menuRows.push(paginationRow);
+        }
+
+        const actionRows = [];
         if (defaultID) {
             const startBtn = new ButtonBuilder()
                 .setCustomId("start_drfrost")
@@ -237,9 +268,15 @@ class drfrostAutocompleter {
                 .setEmoji(emojis.tick)
                 .setStyle(ButtonStyle.Success)
                 .setDisabled(disabled);
-            row.addComponents(startBtn);
+            actionRows.push(new ActionRowBuilder().addComponents(startBtn));
         }
-        row.addComponents(loginBtn, continueBtn, practiseBtn, xpFarmBtn, saveAccountBtnCopy);
+        actionRows.push(new ActionRowBuilder().addComponents(
+            loginBtn,
+            continueBtn,
+            practiseBtn,
+            xpFarmBtn,
+            saveAccountBtnCopy
+        ));
 
         // 3. Assemble everything into the main container
         const container = new ContainerBuilder()
@@ -253,8 +290,8 @@ class drfrostAutocompleter {
                 seperator
             )
             .addActionRowComponents(
-                selectRow,
-                row
+                ...menuRows,
+                ...actionRows
             );
 
         const message_sent = await this.interaction.editReply({
@@ -855,7 +892,11 @@ class drfrostAutocompleter {
                 await this.mainMenu(homeworks.tasks, false, this.selectedTaskAid);
             } else if (componentInteraction.isButton()) {
                 console.log(componentInteraction.customId);
-                if (componentInteraction.customId === 'start_drfrost') {
+                if (componentInteraction.customId === 'drfrost_homework_prev' || componentInteraction.customId === 'drfrost_homework_next') {
+                    await componentInteraction.deferUpdate();
+                    const pageDelta = componentInteraction.customId === 'drfrost_homework_next' ? 1 : -1;
+                    await this.mainMenu(homeworks.tasks, false, this.selectedTaskAid, this.homeworkPage + pageDelta);
+                } else if (componentInteraction.customId === 'start_drfrost') {
                     if (!this.selectedTaskAid) return;
                     await componentInteraction.deferUpdate();
                     const taskAid = this.selectedTaskAid;
@@ -1047,16 +1088,6 @@ class drfrostAutocompleter {
         const taskTimer = process.hrtime();
         let url = 'Processing...';
 
-        let cancelled;
-        const cancel = new ButtonBuilder()
-            .setCustomId('cancel')
-            .setLabel('Cancel')
-            .setEmoji(emojis.x)
-            .setStyle(ButtonStyle.Danger);
-
-        const row = new ActionRowBuilder()
-            .addComponents(cancel);
-
         const question = await this.sendRequest('https://www.drfrost.org/api/tasks/question/get', { "aaid": aaid });
         const numQuestions = question.task.cdata.numquestions ?? undefined;
 
@@ -1066,34 +1097,26 @@ class drfrostAutocompleter {
 
         const sectionsProgress = [[{
             name: 'Progress',
-            value: getProgressBar(0, 1)
+            value: getProgressBar(0, 1),
+            percentage: 0
         }]];
 
-        const initialEmbed = new EmbedBuilder()
-            .setColor(EMBED_COLOR)
-            .setTitle('DrFrost Autocompleter')
-            .setDescription(`\`Starting Questions...\``);
+        const getSettingsField = () => `**Time Settings:** ${this.faketime.min}-${this.faketime.max} seconds`;
+        const progressUpdater = new progressTracker(
+            this.interaction,
+            getTimeField,
+            getSettingsField,
+            null,
+            'DrFrost',
+            'yellow'
+        );
 
-        const progressUpdater = new progressTracker(this.interaction, getTimeField);
+        if (await progressUpdater.start(sectionsProgress)) return;
 
-        if (await progressUpdater.start(initialEmbed, row, sectionsProgress)) return;
-
-        const collector = progressUpdater.targetMessage.createMessageComponentCollector({
-            componentType: ComponentType.Button
-        });
-
-        collector.on('collect', async (interaction) => {
-            await interaction.deferUpdate();
-            if (interaction.customId === 'cancel') {
-                cancelled = true;
-
-                await progressUpdater.updateEmbed(`Cancelling...`);
-            }
-        });
-
+        let finalStatus = 'Finished';
         try {
             url = `https://www.drfrost.org/do-question.php?aaid=${aaid}`;
-            while (!cancelled && (!numQuestions || (attemptedQuestions < numQuestions))) {
+            while (!progressUpdater.cancelled && (!numQuestions || (attemptedQuestions < numQuestions))) {
                 await progressUpdater.updateEmbed('Completing Questions...');
                 const question = await this.sendRequest('https://www.drfrost.org/api/tasks/question/get', { "aaid": aaid });
                 attemptedQuestions = question.attempt.numcompleted[0];
@@ -1107,40 +1130,42 @@ class drfrostAutocompleter {
                 const qid = question.question.qid;
                 const content = question.question.content;
                 if (this.faketime.max) {
-                    await progressUpdater.wait(this.faketime, `Waiting to complete question ${attemptedQuestions + 1}`, () => !cancelled);
+                    await progressUpdater.wait(this.faketime, `Waiting to complete question ${attemptedQuestions + 1}`, () => progressUpdater.cancelled);
                 }
-                if (cancelled) break;
+                if (progressUpdater.cancelled) break;
                 console.log(qid);
                 console.log(content);
                 console.log('Check answer', content, question.question.params);
-                let answer = await checkAnswer(content, question.question.params) ?? 0;
-                let inDB;
-                if (answer) {
+                let answer = await checkAnswer(content, question.question.params);
+                const inDB = answer !== null && answer !== undefined;
+                if (inDB) {
                     answer = smartParse(answer);
                     console.log('DB ANSWER!!!', answer);
-                    inDB = true;
                 } else {
                     let attempts = 0;
                     const maxWaitMs = 60000;
                     const checkIntervalMs = 3000;
 
-                    while (typeof answer === "number" && !cancelled) {
+                    do {
                         answer = await geminiAnswer.answerQuestion(question.question, '3-pro-preview');
                         if (typeof answer === "number") {
                             attempts++;
                             let elapsed = 0;
 
                             await progressUpdater.updateEmbed(`The AI model returned an error code (${answer}). Waiting for 60 seconds before retrying (Attempt ${attempts})...`);
-                            while (elapsed < maxWaitMs && !cancelled) {
+                            while (elapsed < maxWaitMs && !progressUpdater.cancelled) {
                                 const timeLeft = maxWaitMs - elapsed;
                                 await new Promise(res => setTimeout(res, Math.min(checkIntervalMs, timeLeft)));
                                 elapsed += Math.min(checkIntervalMs, timeLeft);
                             }
                         }
+                    } while (typeof answer === "number" && !progressUpdater.cancelled);
+                    if (answer === null || answer === undefined) {
+                        throw new Error('AI did not return an answer for the Dr Frost question.');
                     }
                 }
 
-                if (cancelled) {
+                if (progressUpdater.cancelled) {
                     break;
                 }
                 // console.log(answer);
@@ -1170,8 +1195,10 @@ class drfrostAutocompleter {
             }
         } catch (err) {
             console.log('DrFrost Autocompleter error', err);
+            finalStatus = 'Failed; see the bot logs.';
         } finally {
-            await progressUpdater.updateEmbed(`Finished`);
+            if (progressUpdater.cancelled && finalStatus === 'Finished') finalStatus = 'Cancelled';
+            await progressUpdater.updateEmbed(finalStatus);
             await progressUpdater.end();
             await updateStats(this.interaction.user.id, 'drfrost', (process.hrtime(taskTimer))[0]);
         }

@@ -31,25 +31,13 @@ const seperator = new SeparatorBuilder({
 async function educake_autocompleter(interaction, userSession, retake, timeSettings, selectedQuizzes) {
     if (!selectedQuizzes || selectedQuizzes.length === 0) return;
 
-    const cancel = new ButtonBuilder()
-        .setCustomId('cancel')
-        .setLabel('Cancel')
-        .setEmoji(emojis.x)
-        .setStyle(ButtonStyle.Danger);
-
-    const row = new ActionRowBuilder().addComponents(cancel);
-
-    const initialEmbed = new EmbedBuilder()
-        .setColor(EMBED_COLOR)
-        .setTitle('Educake Autocompleter')
-        .setDescription(`\`Starting...\``);
-
     const sectionsProgress = [];
     let currentGroup = [];
     for (const qId of selectedQuizzes) {
         currentGroup.push({
             name: `Quiz ${qId}`,
-            value: getProgressBar(0, 1)
+            value: getProgressBar(0, 1),
+            percentage: 0
         });
         if (currentGroup.length === 5) {
             sectionsProgress.push(currentGroup);
@@ -66,26 +54,22 @@ async function educake_autocompleter(interaction, userSession, retake, timeSetti
         return `> **Accuracy**: ${totalQuestionsCount ? Math.round(totalCorrectCount / totalQuestionsCount * 100) : 0}%\n> **Time Spent**: ${formatTime((process.hrtime(taskTimer))[0])}`;
     };
 
-    const progressUpdater = new progressTracker(interaction, getTimeField);
+    const getSettingsField = () => `**Time Settings:** ${timeSettings.min}-${timeSettings.max} seconds`;
+    const progressUpdater = new progressTracker(
+        interaction,
+        getTimeField,
+        getSettingsField,
+        null,
+        'Educake',
+        'orangy_brown',
+        null,
+        userSession
+    );
 
-    if (await progressUpdater.start(initialEmbed, row, sectionsProgress)) return;
-
-    let cancelled = false;
-
-    const collector = progressUpdater.targetMessage.createMessageComponentCollector({
-        componentType: ComponentType.Button
-    });
-
-    collector.on('collect', async (interaction) => {
-        await interaction.deferUpdate();
-        if (interaction.customId === 'cancel') {
-            cancelled = true;
-            await progressUpdater.updateEmbed(`Cancelling...`);
-        }
-    });
+    if (await progressUpdater.start(sectionsProgress)) return;
 
     for (let quizIdx = 0; quizIdx < selectedQuizzes.length; quizIdx++) {
-        if (cancelled) break;
+        if (progressUpdater.cancelled) break;
 
         let quizId = selectedQuizzes[quizIdx];
         const quizAnswers = await userSession.sendRequest(`https://my.educake.co.uk/api/student/quiz/${quizId}${retake ? '/retake' : ''}`);
@@ -101,7 +85,7 @@ async function educake_autocompleter(interaction, userSession, retake, timeSetti
         totalQuestionsCount += unansweredQuestions.length;
 
         for (const [index, questionId] of unansweredQuestions.entries()) {
-            if (cancelled) break;
+            if (progressUpdater.cancelled) break;
             const question = questionMap[questionId];
             const waitTime = Math.floor(Math.random() * (timeSettings.max - timeSettings.min + 1)) + timeSettings.min;
             const waitTimeMs = waitTime * 1000;
@@ -112,12 +96,12 @@ async function educake_autocompleter(interaction, userSession, retake, timeSetti
 
                 await progressUpdater.updateEmbed(`Waiting to Complete Question ${index + 1} for Quiz ${quizIdx + 1}/${selectedQuizzes.length} \`<t:${Math.floor(Date.now() / 1000) + waitTime}:R>...`);
 
-                while (elapsed < waitTimeMs && !cancelled) {
+                while (elapsed < waitTimeMs && !progressUpdater.cancelled) {
                     const timeLeft = waitTimeMs - elapsed;
                     await new Promise(res => setTimeout(res, Math.min(interval, timeLeft)));
                     elapsed += Math.min(interval, timeLeft);
                 }
-                if (cancelled) break;
+                if (progressUpdater.cancelled) break;
             }
 
             await progressUpdater.updateProgressBar(quizIdx, index + 1, unansweredQuestions.length || 1);
