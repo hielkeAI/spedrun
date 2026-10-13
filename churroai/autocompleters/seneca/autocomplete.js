@@ -1,5 +1,7 @@
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require('discord.js');
 const { DynamicSessionGenerator } = require('./parser');
 const progressTracker = require('../../utils/progressTracker');
+const { emojis, colours } = require('../../config.json');
 const getProgressBar = require('../../utils/getProgressBar');
 const formatTime = require('../../utils/formatTime');
 const logger = require('../../utils/logger.js');

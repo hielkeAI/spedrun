@@ -137,6 +137,7 @@ async function imageSolver(image, message) {
     );
     const answer = answerObj.answer || 'No Answer';
     const explanation = answerObj.explanation || 'No Explanation';
+    const url = answerObj.url || 'https://www.gauthmath.com/';
     const correctBtn = new ButtonBuilder()
         .setCustomId(`correct`)
         .setLabel('Correct')

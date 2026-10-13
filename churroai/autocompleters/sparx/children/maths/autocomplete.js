@@ -1,6 +1,8 @@
-const { MessageFlags, AttachmentBuilder, ContainerBuilder, FileBuilder, TextDisplayBuilder } = require('discord.js');
+const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, MessageFlags, AttachmentBuilder, ContainerBuilder, FileBuilder, TextDisplayBuilder } = require('discord.js');
+const fs = require('fs').promises;
+const { emojis, colours } = require('../../../../config.json');
 const { getBookworks, addToDbBookwork } = require('../../../../database/bookwork.js');
-const { appendToDB, getSparxQuestion, updateSparxAnswerRPC } = require('../../../../database/general.js');
+const { appendToDB, getFromDB, updateDB, getSparxQuestion, updateSparxAnswerRPC } = require('../../../../database/general.js');
 const { getBookworkCheckAnswer } = require('./bookwork.js');
 const { convertToPDF } = require('./latexPDF.js');
 const parseQuestionForDB = require('../../parseQuestionForDB.js');
@@ -16,6 +18,7 @@ const { checkAccount } = require('../../../../database/accounts.js');
 const isHigherModel = require('../../../../utils/isHighestModel.js');
 const makeGroupArray = require('../../../../utils/makeGroupArray.js');
 const SparxQuestionParser = require('./parser');
+const canonicalize = require('../../../../utils/canonicalize.js');
 const queues = require('../../../../queues/queues.js');
 const queue = queues.get('sparx_maths');
 
@@ -297,6 +300,20 @@ async function sparxMathsAutocomplete(userSession) {
 
     const taskTimer = process.hrtime();
 
+    const cancel = new ButtonBuilder()
+        .setCustomId('cancel')
+        .setLabel('Cancel')
+        .setEmoji(emojis.x)
+        .setStyle(ButtonStyle.Danger);
+
+    const row = new ActionRowBuilder()
+        .addComponents(cancel);
+
+    const initialEmbed = new EmbedBuilder()
+        .setColor(colours.sparx_maths)
+        .setTitle('Sparx Maths Autocompleter')
+        .setDescription(`\`Starting Questions...\``);
+
     // const packageID = interaction.values[0];
     const sparxMathsExecuter = new sparxMathsAutocompleter(sparxMaths, interaction, packageID, log, userSession.settings);
     userSession.sparxMathsExecuter = sparxMathsExecuter;
@@ -448,6 +465,7 @@ async function sparxMathsAutocomplete(userSession) {
                     const questionParsed = parseQuestionForDB(item.payload.question.questionSpec);
                     const dbAnswer = await sparxMathsExecuter.getAnswerFromDB(questionParsed);
                     const previousIncorrectAnswers = dbAnswer?.incorrect_answers;
+                    const alreadyInDBCorrect = !!dbAnswer?.answer;
                     const InDb = !!dbAnswer;
                     log.logToFile('questionParsed.content', JSON.stringify(questionParsed.content, null, 0));
 

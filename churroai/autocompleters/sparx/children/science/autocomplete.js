@@ -1,6 +1,8 @@
+const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
+const { emojis, colours } = require('../../../../config.json');
 const parseQuestionForDB = require('../../parseQuestionForDB.js');
 const SparxParser = require('./parser.js');
-const { appendToDB, getSparxQuestion, updateSparxAnswerRPC } = require('../../../../database/general.js'); // deleteEntryDB
+const { appendToDB, getFromDB, getSparxQuestion, updateSparxAnswerRPC } = require('../../../../database/general.js'); // deleteEntryDB
 const { logError } = require('../../../../utils/errorLogger.js');
 const progressTracker = require('../../../../utils/progressTracker.js');
 const formatTime = require('../../../../utils/formatTime');
