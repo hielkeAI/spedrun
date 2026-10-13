@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, ContainerBuilder, TextDisplayBuilder, MessageFlags } = require('discord.js');
-const { name, colours, channels, base_role, down_channel, image_solver } = require('../../config.json');
+const { colours, channels, base_role, down_channel, image_solver } = require('../../config.json');
 const setDownStatusChannel = require('../../utils/setDownStatusChannel');
 const sendShutdownWebhook = require('../../utils/sendShutdownWebhook');
 const Queues = require('../../queues/queues');

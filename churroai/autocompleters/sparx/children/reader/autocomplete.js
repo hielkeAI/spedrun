@@ -1,4 +1,3 @@
-const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
 const { logError } = require('../../../../utils/errorLogger.js');
 const progressTracker = require('../../../../utils/progressTracker.js');
 const formatTime = require('../../../../utils/formatTime');
@@ -6,7 +5,6 @@ const getProgressBar = require('../../../../utils/getProgressBar');
 const getAIanswer = require('../../../../utils/getAIanswer.js');
 const { checkAccount } = require('../../../../database/accounts.js');
 const logger = require('../../../../utils/logger.js');
-const { colours } = require('../../../../config.json');
 const { addToDb, checkAnswer } = require('../../../../database/reader.js');
 const getApiKeys = require('../../../../utils/getApiKeys.js');
 const { answerQuestionAi } = require('../../../../gemini/sparx_reader/main.js');

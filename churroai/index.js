@@ -67,13 +67,10 @@ const { executeViewAccounts, saveAccount } = require('./handlers/savedAccountsHa
 const { createAccount } = require('./handlers/accountHandler.js');
 const mainAccountLogin = require('./handlers/mainAccountLogin.js');
 const { viewSavedAccounts, changeMasterPassword, updateAccountInteraction, changeSlots } = require('./handlers/accountManager.js');
-const config = require('./config.json');
 const imageSolverHandler = require('./imageSolver.js');
 const processSettings = require('./generic/processSettings.js');
 const seperateParentChild = require('./utils/seperateParentChild.js');
 const processLogin = require('./generic/processLogin.js');
-const axios = require('axios');
-const FormData = require('form-data');
 const { colours, admin_roles, down_channel, base_role, channels, image_solver } = require('./config.json');
 const sendStartedMessage = require('./utils/sendStartedMessage.js');
 const sendPersistentEmbeds = require('./generic/sendPersistentEmbeds.js');
@@ -116,12 +113,12 @@ async function showAutocompChannels(client) {
 
 const sendLog = require('./utils/sendLogsWebhook.js');
 async function cleanAllLogs(dir = './sessionLogs') {
+    if (!fs.existsSync(dir)) return;
     const files = fs.readdirSync(dir);
 
     for (const name of files) {
         if (name === ".gitkeep") continue;
         const filePath = path.join(dir, name);
-        const stats = fs.statSync(filePath);
 
         const embed = {
             title: 'Session Logs (Cleanup)',
@@ -222,6 +219,12 @@ client.on('interactionCreate', async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
     const command = interaction.client.commands.get(interaction.commandName);
+    if (!command) {
+        await interaction.reply(`No command matching ${interaction.commandName} was found.`);
+        console.error(`No command matching ${interaction.commandName} was found.`);
+        return;
+    }
+
     // Prevent crash in DMs
     if (!interaction.guild) {
         return interaction.reply({
@@ -239,12 +242,6 @@ client.on('interactionCreate', async (interaction) => {
             content: 'Only admins can run that command, sowwy.',
             flags: MessageFlags.Ephemeral
         });
-    }
-
-    if (!command) {
-        await interaction.reply(`No command matching ${interaction.commandName} was found.`);
-        console.error(`No command matching ${interaction.commandName} was found.`);
-        return;
     }
 
     await command.execute(interaction, client);

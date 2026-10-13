@@ -6,7 +6,7 @@ let commitMessage = 'unknown';
 try {
     commitHash = execSync('git rev-parse --short HEAD').toString().trim();
     commitMessage = execSync('git log -1 --pretty=%s').toString().trim();
-} catch (err) {
+} catch {
     // Git not available or not a repo, keep defaults
 }
 
