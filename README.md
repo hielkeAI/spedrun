@@ -6,8 +6,8 @@ The installation guide below is a step-by-step guide on how to set-up the bot on
 **If you are only planning to use the bot for personal use, you can use the bot for free at the discord server!**
 
 ## Discord Server
-### https://discord.gg/AaR6VjPDdc
-*If the invite link is invalid, please send a Direct Message to **churrogamer** (Discord ID: `1187435043493257256`).*
+### https://discord.gg/ZWF5VzuXSk
+*If the invite link is invalid, please send a Direct Message to **weavernetwork** yes its the same as the wyca one (Discord ID: `1350775338740875396`).*
 
 ## Prerequisites
 
