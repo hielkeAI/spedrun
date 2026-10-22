@@ -1,5 +1,5 @@
 # Introduction
-This project was made to help students automatically complete their homework with the use of AI and requests while avoiding detection. You may use the code and database for whatever use case, but providing credit back to this original project is preferable. 
+This project was made to help students automatically complete their homework with the use of AI and requests while avoiding detection. You may use the code and database for whatever use case, but providing credit back to this original project is preferable. Sparx maths v2 is currently brokem it needs fixing dr frost shoud work it works for me.
 
 The installation guide below is a step-by-step guide on how to set-up the bot on your own computer. The bot may or may not work on a cloud server due to Cloudflare.
 
