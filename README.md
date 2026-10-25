@@ -1,4 +1,4 @@
-# Thank you churro for publiching the scorce code!!! we are using this as a base for out bot bcs its easyer
+# Huge thanks to ChurroAI for providing the source code of their bot. We are using this src as a base for our bot.
 
 # Introduction
 This project was made to help students automatically complete their homework with the use of AI and requests while avoiding detection. You may use the code and database for whatever use case, but providing credit back to this original project is preferable. Sparx maths v2 is currently brokem it needs fixing dr frost shoud work it works for me.
@@ -9,7 +9,7 @@ The installation guide below is a step-by-step guide on how to set-up the bot on
 
 ## Discord Server
 ### https://discord.gg/ZWF5VzuXSk
-*If the invite link is invalid, please send a Direct Message to **weavernetwork** yes its the same as the wyca one (Discord ID: `1350775338740875396`).*
+*If the invite link is invalid, please send a Direct Message to **weavernetwork**, or **ezkoala**.*
 
 ## Prerequisites
 
