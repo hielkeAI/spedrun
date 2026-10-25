@@ -5,7 +5,7 @@ This project was made to help students automatically complete their homework wit
 
 The installation guide below is a step-by-step guide on how to set-up the bot on your own computer. The bot may or may not work on a cloud server due to Cloudflare.
 
-**If you are only planning to use the bot for personal use, you can use the bot for free at the discord server!**
+*If you are only planning to use the bot for personal use, you can use the bot for free in the discord server, linked **below.***
 
 ## Discord Server
 ### https://discord.gg/ZWF5VzuXSk
@@ -119,3 +119,5 @@ Once all your files are configured and saved, ensure your terminal is in the bot
    ```
 
 **Congrats! Your bot should now be online and running!**
+
+*For any issues or updates needed in this readme, please DM **ezkoala** on Discord, or ping in the Discord.*
