@@ -49,7 +49,7 @@ async function autocomplete(userSession) {
     }
 
     const getTimeField = function () {
-        return `**Time Spent:** ${formatTime((process.hrtime(this.taskTimer))[0])}\n**Time Simulated:** ${formatTime(this.totalSeconds)}`;
+        return `**Time Spent:** ${formatTime((process.hrtime(this.taskTimer))[0])}`;
     };
     const getSettingsField = function () {
         return `**Time Settings:** ${userSession.settings.min}-${userSession.settings.max} Seconds`;
@@ -67,7 +67,7 @@ async function autocomplete(userSession) {
             const timeQuestions = [];
             let fakeTime = 0;
             for (let i = 0; i < 5; i++) {
-                const timeTaken = Math.floor(Math.random() * (userSession.settings.max - userSession.settings.min + 1)) + userSession.settings.min;
+                const timeTaken = 1;
                 timeQuestions.push(timeTaken);
             }
 

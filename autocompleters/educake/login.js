@@ -1,7 +1,11 @@
 const { educakeLogin } = require('../../archive/educake/puppeteer.js');
 
 async function login({ username, password, type } = {}) {
-    return { authToken: await educakeLogin(username, password, type || 'Normal') };
+    const cookieString = await educakeLogin(username, password, type || 'Normal');
+    if (!cookieString) {
+        return { status: 'error', message: 'Login failed' };
+    }
+    return { authToken: cookieString, cookies: cookieString };
 }
 
 module.exports = login;

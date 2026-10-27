@@ -41,7 +41,6 @@ class sparxMathsAutocompleter {
         this.currentBookmark = null;
         this.bookmarks = {};
         this.startTimestamp = Math.floor(Date.now() / 1000);
-        this.totalFakeTime = 0;
         this.settings = settings;
     }
 
@@ -248,18 +247,13 @@ class sparxMathsAutocompleter {
         return timestableStarted.activityIndex;
     }
 
-    getTimestamp(addToUser) {
-        // Random offset in seconds
-        let offset = Math.floor(Math.random() * (this.settings.max - this.settings.min + 1)) + this.settings.min;
-        this.startTimestamp += offset;
-        if (addToUser) {
-            this.totalFakeTime += offset;
-        }
+    getTimestamp() {
+        this.startTimestamp += 1;
 
         // Random 3-digit number 100-999, then append six zeros
         const nanos = (Math.floor(Math.random() * 900) + 100) * 1_000_000;
 
-        this.log.logToFile(`Time recorded is ${this.startTimestamp} and ${addToUser}`);
+        this.log.logToFile(`Time recorded is ${this.startTimestamp}`);
 
         return {
             "seconds": this.startTimestamp,
@@ -289,11 +283,11 @@ async function sparxMathsAutocomplete(userSession) {
     const sparxMaths = userSession.requesticator;
     const packageID = userSession.selectedHomework;
     const apikeys = (await checkAccount(interaction.user.id)).apikeys;
-    const ai = convertAItoObject(userSession.settings.model);
+    const ai = convertAItoObject(userSession?.settings?.model || '');
     const log = new logger(userSession.interaction.user.id, 'sparx_maths');
     sparxMaths.log = log;
     log.logToFile('Logging Start');
-    log.logToFile(`**Settings**\nFaketime Min: ${userSession.settings.min}\nFaktime Max: ${userSession.settings.max}\nPDF Settings: ${JSON.stringify(userSession.settings.pdfSettings, null, 2)}`);
+    log.logToFile(`**Settings**\nPDF Settings: ${JSON.stringify(userSession.settings.pdfSettings, null, 2)}`);
     const queueMaths = queues.get('sparx_maths');
 
     const parser = new SparxQuestionParser(interaction, apikeys);
@@ -331,10 +325,10 @@ async function sparxMathsAutocomplete(userSession) {
     );
 
     const getTimeField = function () {
-        return `**Time Spent:** ${formatTime((process.hrtime(taskTimer))[0])}\n**Time Simulated:** ${formatTime(sparxMathsExecuter.totalFakeTime)}`;
+        return `**Time Spent:** ${formatTime((process.hrtime(taskTimer))[0])}`;
     };
     const getSettingsField = function () {
-        return `**Time Settings:** ${userSession.settings.min}-${userSession.settings.max} Seconds`;
+        return `**PDF Settings:** ${JSON.stringify(userSession.settings.pdfSettings || {})}`;
     };
 
     const progressUpdater = new progressTracker(interaction, getTimeField, getSettingsField, sparxMathsExecuter, 'Sparx Maths', 'sparx_maths', userSession.selectedHomeworkDue, userSession);
@@ -484,7 +478,7 @@ async function sparxMathsAutocomplete(userSession) {
                                     }
                                 }
                             },
-                            "timestamp": userAutocompleters[interaction.user.id].getTimestamp(true)
+                            "timestamp": userAutocompleters[interaction.user.id].getTimestamp()
                         };
                     }
 
@@ -621,7 +615,7 @@ async function sparxMathsAutocomplete(userSession) {
         }
         await log.send(interaction.user);
     }
-    return sparxMathsExecuter.totalFakeTime;
+    return 0;
 }
 
 module.exports = sparxMathsAutocomplete;

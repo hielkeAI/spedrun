@@ -13,7 +13,7 @@ async function handleApiKeyRequest(interaction) {
         const key = separator === -1 ? apikey : apikey.slice(separator + 1);
         const validProvider = ['gemini', 'mistral', 'qwen', 'openrouter'].includes(provider);
         const validKey = provider === 'gemini'
-            ? key.startsWith('AIzaSy') && key.length === 39
+            ? (key.startsWith('AIzaSy') && key.length === 39) || /^AQ\.[A-Za-z0-9._-]{10,}$/.test(key)
             : key.length > 0;
         if (!validProvider || !validKey) {
             const container = new ContainerBuilder()

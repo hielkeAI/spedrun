@@ -553,7 +553,8 @@ async function educake_model_executor(interaction) {
         educake_Request.sessionToken = authToken.accessToken;
         userSessions[interaction.user.id] = educake_Request;
 
-        const educakeMainmenuer = new educakeMainMenu(interaction, (await checkAccount(interaction.user.id)).educake_settings);
+        const _account = (await checkAccount(interaction.user.id)) || {};
+        const educakeMainmenuer = new educakeMainMenu(interaction, _account.educake_settings || { min: 5, max: 10 });
         userMenus[interaction.user.id] = educakeMainmenuer;
         await educakeMainmenuer.main();
     } else if (interaction.customId === 'educake_set_time') {

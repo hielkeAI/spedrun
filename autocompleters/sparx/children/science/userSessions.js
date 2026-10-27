@@ -122,8 +122,8 @@ class userSession {
             .addSeparatorComponents(new SeparatorBuilder().setDivider(true).setSpacing(SeparatorSpacingSize.Small))
             .addTextDisplayComponents(
                 new TextDisplayBuilder().setContent(`### Settings`),
-                new TextDisplayBuilder().setContent(`⏰ **Minimum Fake Time**: ${this.settings.min} Seconds`),
-                new TextDisplayBuilder().setContent(`⏰ **Maximum Fake Time**: ${this.settings.max} Seconds`)
+                new TextDisplayBuilder().setContent(`⏰ **Minimum Time**: ${this.settings.min} Seconds`),
+                new TextDisplayBuilder().setContent(`⏰ **Maximum Time**: ${this.settings.max} Seconds`)
             );
 
         await this.createSelector();

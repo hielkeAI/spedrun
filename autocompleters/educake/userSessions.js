@@ -18,13 +18,15 @@ function get(userId) {
     return { autocompleter, loginDetails: getLoginDetails(autocompleter) };
 }
 
-async function createNewSession(interaction, loginDetails, authToken) {
-    const { educakeMainMenu, userMenus, userSessions: archivedUserSessions } = require('../../archive/educake/main.js');
+async function createNewSession(interaction, loginDetails, authToken, cookies) {
+    const { educakeMainMenu, userMenus, userSessions } = require('../../archive/educake/main.js');
     const account = await checkAccount(interaction.user.id);
     const settings = account?.educake_settings ?? { min: 5, max: 10 };
 
     const autocompleter = new educakeMainMenu(interaction, settings);
-    const session = new EducakeRequesticator(authToken, {
+    // Use cookies if provided, otherwise fall back to authToken (for backwards compatibility)
+    const cookieString = cookies || authToken;
+    const session = new EducakeRequesticator(cookieString, {
         email: loginDetails.username,
         password: loginDetails.password,
         loginType: loginDetails.type,
@@ -34,7 +36,7 @@ async function createNewSession(interaction, loginDetails, authToken) {
     const tokenResponse = await session.sendRequest('https://my.educake.co.uk/session-token');
     session.sessionToken = tokenResponse.accessToken;
 
-    archivedUserSessions[interaction.user.id] = session;
+    userSessions[interaction.user.id] = session;
     userMenus[interaction.user.id] = autocompleter;
     return get(interaction.user.id);
 }

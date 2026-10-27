@@ -13,7 +13,7 @@ async function educakeLogin(username, password, loginType, on2FA) {
   try {
     const page = await browser.newPage();
 
-    await page.goto('https://my.educake.co.uk/student-login', { waitUntil: 'networkidle', timeout: 5000 });
+    await page.goto('https://my.educake.co.uk/student-login', { waitUntil: 'networkidle', timeout: 20000 });
 
     const cookieButtonSelector = '#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll';
     const cookieButton = await page.locator(cookieButtonSelector).first();

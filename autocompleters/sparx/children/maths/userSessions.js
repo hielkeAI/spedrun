@@ -83,8 +83,8 @@ class userSession {
         const loginSuccessSection = new TextDisplayBuilder().setContent(`${welcomeMessage}`);
         const settingsSetup = new TextDisplayBuilder().setContent(`### Settings`);
         const pdfSet = new TextDisplayBuilder().setContent(`**📜 PDF **\n**Answers**  \`\`✅\`\`\n**Questions**  ${this.settings.pdfSettings.question ? '``✅``' : '``❌``'}\n**Working Out**  ${this.settings.pdfSettings.working_out ? '``✅``' : '``❌``'}`);
-        const minTime = new TextDisplayBuilder().setContent(`⏰ **Minimum Fake Time**: ${this.settings.min} Seconds`);
-        const maxTime = new TextDisplayBuilder().setContent(`⏰ **Maximum Fake Time**: ${this.settings.max} Seconds`);
+        const minTime = new TextDisplayBuilder().setContent(`⏰ **Minimum Time**: ${this.settings.min} Seconds`);
+        const maxTime = new TextDisplayBuilder().setContent(`⏰ **Maximum Time**: ${this.settings.max} Seconds`);
 
         const XpFarmingButton = new ButtonBuilder()
             .setCustomId('xp_farming')

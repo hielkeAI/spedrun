@@ -29,7 +29,6 @@ const container = new ContainerBuilder()
     .addSeparatorComponents(
         seperator
     )
-
     .addActionRowComponents(
         mathButtons
     );

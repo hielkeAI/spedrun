@@ -272,6 +272,18 @@ client.on('interactionCreate', async (interaction) => {
             return;
         }
 
+        if (interaction.customId === 'educake_set_time' || interaction.customId.startsWith('educake_')) {
+            const { modelExecutor } = require('./autocompleters/educake/modalExecutor.js');
+            await modalExecutor(interaction);
+            return;
+        }
+
+        if (interaction.customId === 'educake_set_time') {
+            const modalExecutor = require('./autocompleters/educake/modalExecutor.js');
+            await modalExecutor(interaction);
+            return;
+        }
+
         if (interaction.customId.startsWith('autocompleterModule_')) {
             const interactionSplit = interaction.customId.split('_');
             const action = interactionSplit[2];
@@ -375,7 +387,9 @@ client.on('interactionCreate', async (interaction) => {
     }
 });
 
+const { maybeReplyEasterEgg } = require('./utils/easterEggs');
 client.on('messageCreate', async (message) => {
+    try { if (await maybeReplyEasterEgg(message)) return; } catch {}
     await imageSolverHandler(message);
     await miscordChat(message);
 });

@@ -18,7 +18,7 @@ const buttonRow = new ActionRowBuilder().addComponents(
 );
 
 const container = new ContainerBuilder()
-    .setAccentColor(colours.onyx)
+    .setAccentColor(colours.educake)
     .addSectionComponents(section)
     .addSeparatorComponents(separator)
     .addActionRowComponents(buttonRow);

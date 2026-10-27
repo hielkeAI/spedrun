@@ -1,6 +1,7 @@
 const getOptionalUserSession = require('../utils/getOptionalUserSession.js');
 const seperateParentChild = require('../utils/seperateParentChild.js');
 const { updateDB } = require('../database/general');
+const { checkAccount } = require('../database/accounts');
 const { MessageFlags } = require('discord.js');
 const { handleApiKeyRequest } = require('../handlers/apikeyHandler.js');
 const { updateSettingsEmbed } = require('./updateSettingsEmbeds');
@@ -8,14 +9,24 @@ const { updateSettingsEmbed } = require('./updateSettingsEmbeds');
 async function processSettings(interaction) {
     await interaction.deferUpdate();
     const platform = seperateParentChild(interaction.customId.split('_')[1]);
+    const action = interaction.customId.split('_').slice(2).join('_');
     if (platform.parent === 'general') {
+        if (action === 'language') {
+            const proposedLanguage = interaction.fields.getField('language').values[0];
+            const account = await checkAccount(interaction.user.id);
+            const existing = account?.general_settings || {};
+            const updated = { ...existing, language: proposedLanguage };
+            await updateDB('accounts', { general_settings: updated }, 'discord_id', interaction.user.id);
+            await updateSettingsEmbed(interaction, 'general');
+            return;
+        }
         await handleApiKeyRequest(interaction);
         return;
     }
     const platformString = platform.child ? `${platform.parent}_${platform.child}` : `${platform.parent}`;
     const platformSettingsString = platform.child ? `${platform.parent}_${platform.child}_settings` : `${platform.parent}_settings`;
 
-    const action = interaction.customId.split('_').slice(2).join('_');
+
     let userSessions;
     let userSession;
     let settingsConfiguration;
