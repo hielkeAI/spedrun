@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { generateAIJson } = require('../../utils/aiProvider');
 
-async function answerQuestionAi(apiKey, extract, question, questionOptions, incorrectAnswers=[], model='gemini:gemini-2.5-flash-lite') {
+async function answerQuestionAi(apiKey, extract, question, questionOptions, incorrectAnswers=[], model='gemini:gemini-3.8-flash') {
 
   try {
     const validQuestionOptions = Array.isArray(questionOptions)

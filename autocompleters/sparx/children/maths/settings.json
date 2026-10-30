@@ -66,8 +66,8 @@
                     "placeholder": "Model Order",
                     "options": [
 						{ "label": "No Models", "value": "No Models" },
-						{ "label": "Gemini 2.5 Flash", "value": "gemini:gemini-2.5-flash" },
-                        { "label": "Gemini Flash -> Gemini Pro", "value": "gemini:gemini-2.5-flash -> gemini:gemini-2.5-pro" },
+						{ "label": "Gemini 3.8 Flash", "value": "gemini:gemini-3.8-flash" },
+                        { "label": "Gemini Flash -> Gemini Pro", "value": "gemini:gemini-3.8-flash -> gemini:gemini-3-pro-preview" },
                         { "label": "Mistral Small", "value": "mistral:mistral-small-latest" },
                         { "label": "Qwen Turbo", "value": "qwen:qwen-turbo" },
                         { "label": "Qwen VL Plus", "value": "qwen:qwen-vl-plus" },

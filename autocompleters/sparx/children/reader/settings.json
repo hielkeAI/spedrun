@@ -69,7 +69,7 @@
                     "id": "model",
                     "placeholder": "AI Model",
                     "options": [
-                        { "label": "Gemini 2.5 Flash Lite", "value": "gemini:gemini-2.5-flash-lite" },
+                        { "label": "Gemini 3.8 Flash", "value": "gemini:gemini-3.8-flash" },
                         { "label": "Mistral Small", "value": "mistral:mistral-small-latest" },
                         { "label": "Qwen Turbo", "value": "qwen:qwen-turbo" },
                         { "label": "Qwen VL Plus", "value": "qwen:qwen-vl-plus" },

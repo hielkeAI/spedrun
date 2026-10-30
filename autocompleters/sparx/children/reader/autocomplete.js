@@ -154,7 +154,7 @@ class sparxReaderAutocompleter {
 
     async getAnswer(id, extract, questionObj) {
         const result = await checkAnswer(id, questionObj);
-        const model = this.settings.model || 'gemini:gemini-2.5-flash-lite';
+        const model = this.settings.model || 'gemini:gemini-3.8-flash';
         const apikeys = getProviderApiKeys(await getApiKeys(this.apikeys), model);
         if (!apikeys.length) throw new Error(`No API key configured for the ${model.split(':')[0]} provider`);
         if (typeof(result) === "string") {
